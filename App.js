@@ -16,6 +16,10 @@ import {
   StatusBar,
 } from 'react-native';
 
+import { Provider, Appbar } from 'react-native-paper'
+
+import Router from './Router'
+
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import {
@@ -25,13 +29,15 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import { BreadProvider } from 'material-bread';
 
 const App: () => React$Node = () => {
   return (
-    <>
-      <Text>Aplicativo base</Text>
-      <Icon name='share' size={32} color='black'/>
-    </>
+    <BreadProvider>
+      <Provider>
+        <Router />
+      </Provider>
+    </BreadProvider>
   );
 };
 
