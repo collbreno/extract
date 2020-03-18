@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
-import { Text, View, TouchableNativeFeedback, ActivityIndicator, Animated, Dimensions, TextInput, Keyboard } from 'react-native'
-import { Appbar, Button, Portal, Dialog } from 'react-native-paper'
-import { TextField } from 'material-bread'
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import { Text, View, TouchableNativeFeedback, Animated, Dimensions, ScrollView, Keyboard } from 'react-native'
+import { Appbar } from 'react-native-paper'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 import { OutlinedTextField } from 'react-native-material-textfield'
 import Colors from 'react-native-material-color'
 import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview'
+import SearchableDialog from '../components/SearchableDialog'
+import PickerButton from '../components/PickerButton'
 
 const ICON = 1
 const COLOR = 2
@@ -44,10 +45,11 @@ export default class AddCategory extends Component {
     }
   }
 
-  // componentDidMount = () => {
-  //   Keyboard.addListener('keyboardDidHide', () => this.setState({ maxRecyclerListViewHeight: 300 }))
-  //   Keyboard.addListener('keyboardDidShow', () => this.setState({ maxRecyclerListViewHeight: 100 }))
-  // }
+  componentDidUpdate = (_, prevState) => {
+    if (prevState.showPickerDialog != this.state.showPickerDialog && this.state.showPickerDialog) {
+      Keyboard.dismiss()
+    }
+  }
 
   dismissPickerDialog = () => {
     this.setState({ showPickerDialog: false, maxRecyclerListViewHeight: 300 })
@@ -57,133 +59,55 @@ export default class AddCategory extends Component {
     }).start()
   }
 
-  renderColor = (color) => (
-    <TouchableNativeFeedback onPress={() => { this.setState({ colorSelected: color }); this.dismissPickerDialog() }}>
-      <View style={{ backgroundColor: 'white' }}>
-        <View style={{ backgroundColor: color, borderRadius: 20, width: 40, height: 40, margin: 5 }} />
-      </View>
-    </TouchableNativeFeedback>
-  )
-  renderIcon = (icon) => {
-    return (
-      <TouchableNativeFeedback onPress={() => { this.setState({ iconSelected: icon }); this.dismissPickerDialog() }}>
-        <View style={{ backgroundColor: 'white', alignItems: 'center', justifyContent: 'center', width: 50, height: 50 }}>
-          <MaterialCommunityIcons name={icon} size={24} color={'black'} />
-        </View>
-      </TouchableNativeFeedback>
-    )
-  }
-
-  renderPickerDialogContent = () => {
-    if (this.state.pickerDialogType == ICON) {
-      return (
-        <>
-          <Animated.View style={{
-            position: 'absolute', width: this.currentWidth,
-            height: 60, backgroundColor: 'white', zIndex: 15,
-            right: 0, top: 0, overflow: 'hidden',
-            flexDirection: 'row', alignItems: 'center'
-          }}>
-            <TextInput
-              ref={ref => this.searchTextRef = ref}
-              style={{ marginLeft: 12 }}
-              placeholder={'Pesquisar icone'}
-              onChangeText={(text) => this.setState({ iconList: this.dataProvider.cloneWithRows(iconList.filter((element) => element.includes(text))) })} />
-          </Animated.View>
-          <View style={{
-            position: 'absolute', right: 0, top: 0, alignItems: 'flex-end',
-            height: 60, width: 48,
-            backgroundColor: 'white', zIndex: 10, justifyContent: 'center'
-          }}>
-            <TouchableNativeFeedback onPress={() => {
-              setTimeout(() => {
-                if (this.searchTextRef) {
-                  this.searchTextRef.focus()
-                  this.setState({ maxRecyclerListViewHeight: 100 })
-                }
-              }, 150);
-              Animated.timing(this.currentWidth, {
-                duration: 150,
-                toValue: this.totalWidth
-              }).start()
-            }}>
-              <View style={{ height: 48, width: 48, alignItems: 'center', justifyContent: 'center' }}>
-                <MaterialIcons name='search' size={32} color={'black'} />
-              </View>
-            </TouchableNativeFeedback>
-          </View>
-          <Dialog.Title>{'Selecione o ícone'}</Dialog.Title>
-          <Dialog.Content>
-            <ActivityIndicator size={"large"} style={{ alignSelf: 'center', position: 'absolute' }} />
-            <RecyclerListView
-              style={{ width: 250, height: this.state.maxRecyclerListViewHeight, alignSelf: 'center' }}
-              layoutProvider={this.layoutProvider}
-              dataProvider={this.state.iconList}
-              rowRenderer={(type, icon) => this.renderIcon(icon)} />
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button style={{ minWidth: 64 }} onPress={() => this.dismissPickerDialog()}>Cancelar</Button>
-          </Dialog.Actions>
-        </>
-      )
-    }
-    return (
-      <>
-        <Dialog.Title>{'Selecione a cor'}</Dialog.Title>
-        <Dialog.Content>
-          <ActivityIndicator size={"large"} style={{ alignSelf: 'center', position: 'absolute' }} />
-          <RecyclerListView
-            style={{ width: 200, height: 300, alignSelf: 'center' }}
-            layoutProvider={this.layoutProvider}
-            dataProvider={this.dataProvider.cloneWithRows(colorList)}
-            rowRenderer={(type, color) => this.renderColor(color)} />
-        </Dialog.Content>
-        <Dialog.Actions>
-          <Button style={{ minWidth: 64 }} onPress={() => this.dismissPickerDialog()}>Cancelar</Button>
-        </Dialog.Actions>
-      </>
-    )
-  }
-
   renderPickerDialog = () => {
     return (
-      <Portal>
-        <Dialog
-          dismissable={false}
-          visible={this.state.showPickerDialog}
-          onDismiss={() => this.dismissPickerDialog()}>
-          {this.renderPickerDialogContent()}
-        </Dialog>
-      </Portal>
+      <SearchableDialog
+        searchable={this.state.pickerDialogType==ICON}
+        listWidth={this.state.pickerDialogType==ICON?250:200}
+        list={this.state.pickerDialogType==ICON?iconList:colorList}
+        title={this.state.pickerDialogType==ICON?'ícone':'cor'}
+        renderItem={(item) => {
+          if (this.state.pickerDialogType==ICON) {
+            return (
+              <TouchableNativeFeedback onPress={() => { this.setState({ iconSelected: item }); this.dismissPickerDialog() }}>
+              <View style={{ backgroundColor: 'white', alignItems: 'center', justifyContent: 'center', width: 50, height: 50 }}>
+                <MaterialCommunityIcons name={item} size={24} color={'black'} />
+              </View>
+            </TouchableNativeFeedback>
+          )
+        }
+        return (
+          <TouchableNativeFeedback onPress={() => { this.setState({ colorSelected: item }); this.dismissPickerDialog() }}>
+            <View style={{ backgroundColor: 'white' }}>
+              <View style={{ backgroundColor: item, borderRadius: 20, width: 40, height: 40, margin: 5 }} />
+            </View>
+          </TouchableNativeFeedback>
+        )
+        }}
+        dismissable={false}
+        visible={this.state.showPickerDialog}
+        onDismiss={() => this.dismissPickerDialog()} />
     )
   }
 
   renderColorSelected = () => {
     return (
-      <TouchableNativeFeedback onPress={() => this.setState({ showPickerDialog: true, pickerDialogType: COLOR })}>
-        <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center', justifyContent: 'space-between', height: 45 }}>
-          <Text>Selecione a cor</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={{ width: 28, height: 28, marginRight: 10, backgroundColor: this.state.colorSelected, borderRadius: 20 }} />
-            <MaterialIcons name='arrow-drop-down' size={24} color='black' />
-          </View>
-        </View>
-      </TouchableNativeFeedback>
+      <PickerButton
+        onPress={() => this.setState({ showPickerDialog: true, pickerDialogType: COLOR })}
+        title={'Selecione a cor'}
+        icon={'md-color-palette'}
+        IconComponent={Ionicons}
+        rigth={() => <View style={{ width: 28, height: 28, marginRight: 10, backgroundColor: this.state.colorSelected, borderRadius: 20 }} />} />
     )
   }
   renderIconSelected = () => {
     return (
-      <TouchableNativeFeedback onPress={() => {
-        this.setState({ showPickerDialog: true, pickerDialogType: ICON, iconList: this.dataProvider.cloneWithRows(iconList) })
-      }}>
-        <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center', justifyContent: 'space-between', height: 45 }}>
-          <Text>Selecione o icone</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <MaterialCommunityIcons name={this.state.iconSelected} size={28} color={this.state.colorSelected} style={{ marginRight: 10 }} />
-            <MaterialIcons name='arrow-drop-down' size={24} color='black' />
-          </View>
-        </View>
-      </TouchableNativeFeedback>
+      <PickerButton 
+        onPress={() => this.setState({ showPickerDialog: true, pickerDialogType: ICON, iconList: this.dataProvider.cloneWithRows(iconList) })}
+        title={'Selecione o ícone'}
+        icon={'circle-edit-outline'}
+        IconComponent={MaterialCommunityIcons}
+        rigth={() => <MaterialCommunityIcons name={this.state.iconSelected} size={28} color={this.state.colorSelected} style={{ marginRight: 10 }} />}/>
     )
   }
 
@@ -195,16 +119,16 @@ export default class AddCategory extends Component {
           <Appbar.Content title='Add category' />
         </Appbar.Header>
         {this.renderPickerDialog()}
-        <View
-          style={{
-            marginHorizontal: 20,
-          }}>
+        <ScrollView
+          keyboardShouldPersistTaps='handled'>
           <OutlinedTextField
-            containerStyle={{ marginTop: 20 }}
-            label='Nome' />
+            label={'Nome'}
+            labelOffset={{ x1: - 40 }}
+            renderLeftAccessory={() => <MaterialCommunityIcons style={{ marginRight: 5 }} size={24} name='pencil' />}
+            containerStyle={{ marginHorizontal: 20, marginTop: 20 }} />
           {this.renderColorSelected()}
           {this.renderIconSelected()}
-        </View>
+        </ScrollView>
       </>
     )
   }

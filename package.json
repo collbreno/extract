@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@react-native-community/masked-view": "^0.1.7",
+    "lottie-react-native": "^3.3.2",
     "material-bread": "^0.2.5",
     "react": "16.9.0",
     "react-native": "0.61.5",
@@ -22,6 +23,7 @@
     "react-native-safe-area-context": "^0.7.3",
     "react-native-screens": "^2.2.0",
     "react-native-svg": "^11.0.1",
+    "react-native-typography": "^1.4.1",
     "react-native-vector-icons": "^6.6.0",
     "react-navigation": "4",
     "react-navigation-stack": "^2.2.2",

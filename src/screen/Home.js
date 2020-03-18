@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Text, View } from 'react-native'
-import { FAB, Appbar } from 'react-native-paper'
+import { FAB, Appbar, Button } from 'react-native-paper'
 
 export default class Home extends Component {
   render() {
@@ -10,6 +10,12 @@ export default class Home extends Component {
           <Appbar.Content title='Home'/>
         </Appbar.Header>
         <Text>primeira tela yey</Text>
+        <Button
+          style={{ marginHorizontal: 50, marginTop: 100 }}
+          mode='contained'
+          onPress={() => this.props.navigation.push('AddCategoryScreen')}>
+          {'Nova categoria'}
+        </Button>
         <FAB 
           style={{
             position: 'absolute',
@@ -18,7 +24,7 @@ export default class Home extends Component {
             bottom: 0
           }}
           icon='plus'
-          onPress={() => this.props.navigation.push('AddCategoryScreen')}/>
+          onPress={() => this.props.navigation.push('NewExpenseScreen')}/>
       </>
     )
   }
