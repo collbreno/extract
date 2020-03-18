@@ -14,22 +14,59 @@ class SearchableDialog extends Component {
       dim.height = 50
       dim.width = 50
     })
-    this.currentWidth = new Animated.Value(0)
     this.totalWidth = Dimensions.get('window').width - 52
     this.state = {
-      maxRecyclerListViewHeight: 300,
+      maxRecyclerListViewHeight: new Animated.Value(300),
       collapsed: true,
+      currentWidth: new Animated.Value(0),
       itemList: this.dataProvider.cloneWithRows(props.list),
       animationProgress: new Animated.Value(0)
     }
   }
 
-  componentDidUpdate = (prevProps) => {
+  componentDidMount = () => {
+    Keyboard.addListener('keyboardDidShow', ({duration}) => {
+      console.log(duration)
+      Animated.timing(this.state.maxRecyclerListViewHeight, {
+        duration: 150,
+        toValue: 150
+      }).start()
+    })
+    Keyboard.addListener('keyboardDidHide', () => {
+      Animated.timing(this.state.maxRecyclerListViewHeight, {
+        duration: 150,
+        toValue: 300,
+      }).start()
+    })
+  }
+
+  componentDidUpdate = (prevProps, prevState) => {
     if (prevProps.list != this.props.list) {
       this.setState({ itemList: this.dataProvider.cloneWithRows(this.props.list) })
     }
-    if (prevProps.visible != this.props.visible && !this.props.visible) {
-      this.setState({ collapsed: true, maxRecyclerListViewHeight: 300 })
+    if (prevProps.visible != this.props.visible && this.props.visible) {
+      this.setState({ 
+        currentWidth: new Animated.Value(0),
+        maxRecyclerListViewHeight: new Animated.Value(300),
+        collapsed: true,
+      })
+      // this.LottieView.reset()
+    }
+    else if (this.props.visible && prevState.collapsed != this.state.collapsed && this.state.collapsed) {
+      Animated.timing(this.state.currentWidth, {
+        duration: 150,
+        toValue: 0
+      }).start()
+      this.setState({ itemList: this.dataProvider.cloneWithRows(this.props.list) })
+      if (this.LottieView) this.LottieView.play(30, 50)
+    }
+    else if (this.props.visible && prevState.collapsed != this.state.collapsed && !this.state.collapsed) {
+      Animated.timing(this.state.currentWidth, {
+        duration: 150,
+        toValue: this.totalWidth
+      }).start()
+      if (this.LottieView) this.LottieView.play(0, 15)
+      this.searchTextRef.focus()
     }
   }
 
@@ -38,15 +75,15 @@ class SearchableDialog extends Component {
     return (
       <>
       <Animated.View style={{
-        position: 'absolute', width: this.currentWidth,
+        position: 'absolute', width: this.state.currentWidth,
         height: 60, backgroundColor: 'white', zIndex: 15,
-        left: 0, top: 0, right: 48, overflow: 'hidden',
+        top: 0, right: 0, overflow: 'hidden',
         flexDirection: 'row', alignItems: 'center',
         borderRadius: this.props.theme.roundness
       }}>
         <TextInput
           ref={ref => this.searchTextRef = ref}
-          style={{ marginLeft: 12 }}
+          style={{ marginLeft: 12, flex: 1 }}
           placeholder={'Pesquisar icone'}
           onChangeText={(text) => this.setState({ itemList: this.dataProvider.cloneWithRows(this.props.list.filter((element) => element.includes(text))) })} />
       </Animated.View>
@@ -56,36 +93,14 @@ class SearchableDialog extends Component {
         backgroundColor: 'white', zIndex: 20, justifyContent: 'center'
       }}>
         <TouchableRipple onPress={() => {
-          setTimeout(() => {
             this.setState({ collapsed: !this.state.collapsed })
-            if (this.searchTextRef) {
-              this.searchTextRef.focus()
-              this.setState({ maxRecyclerListViewHeight: 100 })
-            }
-          }, 150);
-          if (this.state.collapsed) {
-            Animated.timing(this.currentWidth, {
-              duration: 150,
-              toValue: this.totalWidth
-            }).start()
-            Animated.timing(this.state.animationProgress, {
-              duration: 1000,
-              toValue: 60 / 180
-            }).start()
-          }
-          else {
-            Animated.timing(this.currentWidth, {
-              duration: 150,
-              toValue: 0
-            }).start()
-            Animated.timing(this.state.animationProgress, {
-              duration: 1000,
-              toValue: 0
-            }).start()
-          }
         }}>
-          <View style={{ height: 48, width: 48, alignItems: 'center', justifyContent: 'center' }}>
-            <LottieView progress={this.state.animationProgress} source={require('../../assets/lottie/search_button.json')} style={{height: 28, width: 28}}/>
+          <View style={{ height: 48, width: 48, alignItems: 'center', justifyContent: 'center', marginRight: 4 }}>
+            <LottieView
+              ref={ref => this.LottieView = ref}
+              loop={false}
+              source={require('../../assets/lottie/search_button.json')}
+              style={{ height: 42, width: 42 }} />
           </View>
         </TouchableRipple>
       </View>
@@ -102,13 +117,15 @@ class SearchableDialog extends Component {
             <>
             {this.renderSearchButton()}
               <Dialog.Title>{`Selecione o ${this.props.title}`}</Dialog.Title>
-              <Dialog.Content>
+              <Dialog.Content style={{paddingBottom: 0}}>
                 <ActivityIndicator size={"large"} style={{ alignSelf: 'center', position: 'absolute' }} />
-                <RecyclerListView
-                  style={{ width: this.props.listWidth, height: this.state.maxRecyclerListViewHeight, alignSelf: 'center' }}
-                  layoutProvider={this.layoutProvider}
-                  dataProvider={this.state.itemList}
-                  rowRenderer={(type, item) => this.props.renderItem(item)} />
+                <Animated.View style={{height: this.state.maxRecyclerListViewHeight}}>
+                  <RecyclerListView
+                    style={{ width: this.props.listWidth, flex: 1, alignSelf: 'center' }}
+                    layoutProvider={this.layoutProvider}
+                    dataProvider={this.state.itemList}
+                    rowRenderer={(type, item) => this.props.renderItem(item)} />
+                </Animated.View>
               </Dialog.Content>
               <Dialog.Actions>
                 <Button style={{ minWidth: 64 }} onPress={() => this.props.onDismiss()}>{'Cancelar'}</Button>
