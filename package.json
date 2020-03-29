@@ -10,11 +10,15 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@react-native-community/datetimepicker": "^2.3.0",
     "@react-native-community/masked-view": "^0.1.7",
+    "date-fns": "^2.11.1",
+    "lodash": "^4.17.15",
     "lottie-react-native": "^3.3.2",
     "material-bread": "^0.2.5",
     "react": "16.9.0",
     "react-native": "0.61.5",
+    "react-native-autocomplete-input": "^4.1.0",
     "react-native-gesture-handler": "^1.6.0",
     "react-native-material-color": "^1.0.15",
     "react-native-material-textfield": "^0.16.1",
@@ -27,6 +31,7 @@
     "react-native-vector-icons": "^6.6.0",
     "react-navigation": "4",
     "react-navigation-stack": "^2.2.2",
+    "realm": "^3.6.5",
     "recyclerlistview": "^3.0.0"
   },
   "devDependencies": {

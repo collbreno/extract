@@ -1,0 +1,1 @@
+del McFile_database.realm McFile_database.realm.lock lstat.txt && rmdir McFile_database.realm.management

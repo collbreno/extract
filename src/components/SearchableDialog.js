@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { View, Text, TextInput, ActivityIndicator, Animated, Dimensions, Keyboard } from 'react-native'
 import { Portal, Dialog, Button, withTheme, TouchableRipple } from 'react-native-paper'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import _ from 'lodash'
 import LottieView from 'lottie-react-native'
 import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview'
 
@@ -11,8 +12,8 @@ class SearchableDialog extends Component {
     super(props)
     this.dataProvider = new DataProvider((r1, r2) => r1 !== r2)
     this.layoutProvider = new LayoutProvider(() => 'NORMAL', (type, dim) => {
-      dim.height = 50
-      dim.width = 50
+      dim.height = props.itemHeight
+      dim.width = props.itemWidth
     })
     this.totalWidth = Dimensions.get('window').width - 52
     this.state = {
@@ -26,7 +27,6 @@ class SearchableDialog extends Component {
 
   componentDidMount = () => {
     Keyboard.addListener('keyboardDidShow', ({duration}) => {
-      console.log(duration)
       Animated.timing(this.state.maxRecyclerListViewHeight, {
         duration: 150,
         toValue: 150
@@ -85,7 +85,7 @@ class SearchableDialog extends Component {
           ref={ref => this.searchTextRef = ref}
           style={{ marginLeft: 12, flex: 1 }}
           placeholder={'Pesquisar icone'}
-          onChangeText={(text) => this.setState({ itemList: this.dataProvider.cloneWithRows(this.props.list.filter((element) => element.includes(text))) })} />
+          onChangeText={(text) => this.setState({ itemList: this.dataProvider.cloneWithRows(this.props.list.filter((element) =>this.props.searchFunction(element, text))) })} />
       </Animated.View>
       <View style={{
         position: 'absolute', right: 0, top: 0, alignItems: 'flex-end',
@@ -117,16 +117,17 @@ class SearchableDialog extends Component {
             <>
             {this.renderSearchButton()}
               <Dialog.Title>{`Selecione o ${this.props.title}`}</Dialog.Title>
-              <Dialog.Content style={{paddingBottom: 0}}>
-                <ActivityIndicator size={"large"} style={{ alignSelf: 'center', position: 'absolute' }} />
+              <Dialog.ScrollArea style={{paddingBottom: 0}}>
                 <Animated.View style={{height: this.state.maxRecyclerListViewHeight}}>
-                  <RecyclerListView
-                    style={{ width: this.props.listWidth, flex: 1, alignSelf: 'center' }}
+                  { _.isEmpty(this.state.itemList._data) ? null :
+                    <RecyclerListView
+                    style={{ width: this.props.columns*this.props.itemWidth, flex: 1, alignSelf: 'center' }}
                     layoutProvider={this.layoutProvider}
                     dataProvider={this.state.itemList}
                     rowRenderer={(type, item) => this.props.renderItem(item)} />
+                  }
                 </Animated.View>
-              </Dialog.Content>
+              </Dialog.ScrollArea>
               <Dialog.Actions>
                 <Button style={{ minWidth: 64 }} onPress={() => this.props.onDismiss()}>{'Cancelar'}</Button>
               </Dialog.Actions>

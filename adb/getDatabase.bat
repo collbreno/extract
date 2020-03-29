@@ -1,0 +1,1 @@
+adb exec-out run-as com.extract cat files/default.realm > McFile_database.realm
