@@ -9,7 +9,7 @@ import { getTextColor } from '../../functions';
 const screenWidth = Dimensions.get('screen').width
 const screenHeight = Dimensions.get('screen').height
 
-const duration = 500
+const duration = 3000
 const initialLottieProgress = (1/61)*13
 const finalLottieProgress = (1/61)*28
 
@@ -105,12 +105,13 @@ export class DatedExpenseCard extends Component {
       height: new Animated.Value(height),
       cardType: DELETING
     }, () => {
-      setTimeout(() => {
-        deleteExpense(this.props.expense.id)
-      }, duration*2 + duration/2 + duration/3);
+      // setTimeout(() => {
+      //   deleteExpense(this.props.expense.id)
+      // }, duration*2 + duration/2 + duration/3);
       Animated.sequence([
         Animated.parallel([
           Animated.timing(this.state.top, { toValue: y0, duration }),
+          Animated.timing(this.state.descriptionHeight, { toValue: 0 }),
           Animated.timing(this.state.width, { toValue: 25, duration }),
           Animated.timing(this.state.left, { toValue: 25, duration }),
           Animated.timing(this.state.height, { toValue: 25, duration }),
@@ -174,6 +175,8 @@ export class DatedExpenseCard extends Component {
         expense={this.props.expense}
         width={this.state.width}
         left={this.state.left}
+        descriptionHeight={this.state.descriptionHeight}
+        horizontal={this.state.flatListHorizontal}
         top={this.state.top}
         textColor={getTextColor(this.props.expense.category.color)}
         trashProgress={this.state.trashProgress}
@@ -199,8 +202,8 @@ export class DatedExpenseCard extends Component {
         exitFullScreen={this.exitFullScreen}
         listMaxHeight={this.state.flatListMaxHeight}
         descriptionHeight={this.state.descriptionHeight}
-        listMaxWidth={this.state.flatListMaxWidth}
         horizontal={this.state.flatListHorizontal}
+        listMaxWidth={this.state.flatListMaxWidth}
         borderRadius={this.state.borderRadius}
         lottieProgress={this.state.lottieProgress}
         left={this.state.left}

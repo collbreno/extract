@@ -3,6 +3,7 @@ import { View, Text, FlatList, TouchableNativeFeedback, Animated, Dimensions, Ba
 import { Card, Portal, Dialog } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { formatCash } from '../../functions';
+import _ from 'lodash'
 import Tag from '../TagModal/Tag';
 import { format } from 'date-fns';
 import Colors from 'react-native-material-color'
@@ -12,6 +13,16 @@ import LottieView from 'lottie-react-native'
 const trash = require('../../../assets/lottie/trash.json')
 
 export default class DeletingAnimatedCard extends Component {
+
+  renderDescription = () => {
+    if (_.isEmpty(this.props.expense.description)) return null
+    return (
+      <Animated.View style={{ overflow: 'hidden', maxHeight: this.props.descriptionHeight }}>
+        <Text style={{ paddingHorizontal: 12, paddingBottom: 12 }}>{this.props.expense.description}</Text>
+      </Animated.View>
+    )
+  }
+
   render() {
     return (
       <Portal>
@@ -50,9 +61,10 @@ export default class DeletingAnimatedCard extends Component {
                 <MaterialCommunityIcons name='delete' size={22} color={materialColors.blackPrimary} />
               </View>
             </View>
+            {this.renderDescription()}
             <FlatList
               keyExtractor={(item) => item.id.toString()}
-              horizontal
+              horizontal={this.props.horizontal}
               renderItem={({ item: tag }) => <Tag style={{ margin: 2 }} icon={tag.icon} title={tag.title} color={tag.color} textColor={tag.textColor} />}
               data={Array.from(this.props.expense.tags).sort((a, b) => {
                 if (a.icon && !b.icon) return -1
