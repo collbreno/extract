@@ -9,7 +9,7 @@ import { getTextColor } from '../../functions';
 const screenWidth = Dimensions.get('screen').width
 const screenHeight = Dimensions.get('screen').height
 
-const duration = 500
+const duration = 3000
 const initialLottieProgress = (1/61)*13
 const finalLottieProgress = (1/61)*28
 
@@ -105,9 +105,9 @@ export class DatedExpenseCard extends Component {
       height: new Animated.Value(height),
       cardType: DELETING
     }, () => {
-      setTimeout(() => {
-        deleteExpense(this.props.expense.id)
-      }, duration*2 + duration/2 + duration/3);
+      // setTimeout(() => {
+      //   deleteExpense(this.props.expense.id)
+      // }, duration*2 + duration/2 + duration/3);
       Animated.sequence([
         Animated.parallel([
           Animated.timing(this.state.top, { toValue: y0, duration }),
@@ -174,6 +174,12 @@ export class DatedExpenseCard extends Component {
         expense={this.props.expense}
         width={this.state.width}
         left={this.state.left}
+        descriptionHeight={this.state.descriptionHeight}
+        horizontal={this.state.flatListHorizontal}
+        borderRadius={this.state.borderRadius}
+        titleMarginLeft={this.state.titleMarginLeft}
+        lottieProgress={this.state.lottieProgress}
+        toolbarHeight={this.state.toolbarHeight}
         top={this.state.top}
         textColor={getTextColor(this.props.expense.category.color)}
         trashProgress={this.state.trashProgress}
