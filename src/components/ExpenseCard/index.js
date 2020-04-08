@@ -177,6 +177,10 @@ export class DatedExpenseCard extends Component {
         left={this.state.left}
         descriptionHeight={this.state.descriptionHeight}
         horizontal={this.state.flatListHorizontal}
+        borderRadius={this.state.borderRadius}
+        titleMarginLeft={this.state.titleMarginLeft}
+        lottieProgress={this.state.lottieProgress}
+        toolbarHeight={this.state.toolbarHeight}
         top={this.state.top}
         textColor={getTextColor(this.props.expense.category.color)}
         trashProgress={this.state.trashProgress}

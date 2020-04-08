@@ -11,6 +11,7 @@ import { material, materialColors } from 'react-native-typography';
 import LottieView from 'lottie-react-native'
 
 const trash = require('../../../assets/lottie/trash.json')
+const back_button_white = require('../../../assets/lottie/back_button_white.json')
 
 export default class DeletingAnimatedCard extends Component {
 
@@ -19,6 +20,33 @@ export default class DeletingAnimatedCard extends Component {
     return (
       <Animated.View style={{ overflow: 'hidden', maxHeight: this.props.descriptionHeight }}>
         <Text style={{ paddingHorizontal: 12, paddingBottom: 12 }}>{this.props.expense.description}</Text>
+      </Animated.View>
+    )
+  }
+
+  
+  renderToolbar = () => {
+    return (
+      <Animated.View
+        style={{
+          flexDirection: 'row', alignItems: 'center', backgroundColor: this.props.expense.category.color, justifyContent: 'space-between',
+          height: this.props.toolbarHeight, borderTopLeftRadius: this.props.borderRadius, borderTopRightRadius: this.props.borderRadius
+        }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+          <View style={{ marginLeft: 6 }}>
+            <TouchableNativeFeedback
+              onPress={() => this.props.exitFullScreen()}>
+              <View>
+                <LottieView progress={this.props.lottieProgress} style={{ height: 42, width: 42 }} source={back_button_white} />
+              </View>
+            </TouchableNativeFeedback>
+          </View>
+          <Animated.View style={{ position: 'absolute', left: this.props.titleMarginLeft, flexDirection: 'row', alignItems: 'center' }}>
+            <MaterialCommunityIcons size={22} color={this.props.textColor} name={this.props.expense.category.icon} />
+            <Text style={{ fontFamily: 'sans-serif-medium', color: this.props.textColor, marginLeft: 6, fontSize: 16 }}>{this.props.expense.category.name}</Text>
+          </Animated.View>
+        </View>
+        <Text style={{ marginRight: 12, color: this.props.textColor, fontFamily: 'sans-serif-medium' }}>{formatCash(this.props.expense.value)}</Text>
       </Animated.View>
     )
   }
@@ -40,17 +68,7 @@ export default class DeletingAnimatedCard extends Component {
             width: this.props.width,
             overflow: 'hidden'
           }}>
-          <View
-            style={{
-              flexDirection: 'row', alignItems: 'center', backgroundColor: this.props.expense.category.color, justifyContent: 'space-between',
-              height: 42, paddingHorizontal: 12, borderTopLeftRadius: 4, borderTopRightRadius: 4, overflow: 'scroll'
-            }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', overflow: 'scroll' }}>
-              <MaterialCommunityIcons size={22} color={this.props.textColor} name={this.props.expense.category.icon} />
-              <Text style={{ fontFamily: 'sans-serif-medium', color: this.props.textColor, marginLeft: 6, fontSize: 16 }}>{this.props.expense.category.name}</Text>
-            </View>
-            <Text style={{ color: this.props.textColor, fontFamily: 'sans-serif-medium' }}>{formatCash(this.props.expense.value)}</Text>
-          </View>
+            {this.renderToolbar()}
           <View style={{ paddingLeft: 12, paddingBottom: 8 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 48 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
