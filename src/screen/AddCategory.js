@@ -114,6 +114,7 @@ export default class AddCategory extends Component {
               </TouchableNativeFeedback>
             )
           }
+          console.log(item)
           return (
             <TouchableNativeFeedback onPress={() => { this.setState({ colorSelected: item }); this.dismissPickerDialog() }}>
               <View style={{ backgroundColor: 'white' }}>

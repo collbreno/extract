@@ -1,4 +1,5 @@
 import Realm from 'realm'
+import { addMonths } from 'date-fns'
 import { CategorySchema, ExpenseSchema, TagSchema } from './Schemas';
 let _realmInstance = null
 
@@ -100,6 +101,47 @@ export const saveExpense = async ({value, categoryId, date, description = '', ta
     })
     return response
   } catch (error) {
+    console.log(error)
+    throw error
+  }
+}
+
+export const getExpenses = async () => {
+  try {
+    const realm = await getRealmInstance()
+    return realm.objects('Expense').sorted('date', true)
+  }
+  catch (error) {
+    console.log(error)
+    throw error
+  }
+}
+
+export const deleteExpense = async (id) => {
+  try {
+    console.log('deletando gasto do banco de dados')
+    const realm = await getRealmInstance()
+    let response = undefined
+    await realm.write(() => {
+      response = realm.delete(realm.objectForPrimaryKey('Expense', id))
+    })
+    console.log('deletei gasto do banco de dados')
+    return response
+  }
+  catch (error) {
+    console.log(error)
+    throw error
+  }
+}
+
+export const getMonthExpenseValue = async (date = new Date(Date.now())) => {
+  try {
+    let date1 = new Date(date.getFullYear(), date.getMonth(), 1)
+    let date2 = addMonths(date1, 1)
+    const realm = await getRealmInstance()
+    return realm.objects('Expense').filtered('date >= $0 AND date < $1', date1, date2).sum('value')
+  }
+  catch (error) {
     console.log(error)
     throw error
   }
