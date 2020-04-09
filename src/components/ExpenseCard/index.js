@@ -105,9 +105,9 @@ export class DatedExpenseCard extends Component {
       height: new Animated.Value(height),
       cardType: DELETING
     }, () => {
-      // setTimeout(() => {
-      //   deleteExpense(this.props.expense.id)
-      // }, duration*2 + duration/2 + duration/3);
+      setTimeout(() => {
+        deleteExpense(this.props.expense.id)
+      }, duration*2 + duration/2 + duration/3);
       Animated.sequence([
         Animated.parallel([
           Animated.timing(this.state.top, { toValue: y0, duration }),
