@@ -49,6 +49,16 @@ export default class Home extends Component {
             backgroundColor={Colors.BLUE['700']} icon={'md-list-box'}
             IconComponent={Ionicons} text={'Histórico'} textColor={'white'} />
         </View>
+        <View style={{ marginTop: 50, justifyContent: 'space-around', flexDirection: 'row', paddingHorizontal: 30 }}>
+          <IconButton
+            onPress={() => this.props.navigation.push('CategoryExpensesScreen')}
+            backgroundColor={Colors.BLUE['700']} icon={'chart-donut'}
+            text={'Categorias'} textColor={'white'} />
+          <IconButton
+            onPress={() => false}
+            backgroundColor={Colors.BLUE['700']} icon={'chart-bar'}
+            text={'Meses'} textColor={'white'} />
+        </View>
         <FAB
           style={{
             position: 'absolute',
