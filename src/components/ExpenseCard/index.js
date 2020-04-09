@@ -6,10 +6,13 @@ import DeletingAnimatedCard from './DeletingAnimatedCard';
 import { deleteExpense } from '../../realm';
 import { getTextColor } from '../../functions';
 
+const editButtonMaxSize = 22
+const editButtonBoxMaxSize = 48
+
 const screenWidth = Dimensions.get('screen').width
 const screenHeight = Dimensions.get('screen').height
 
-const duration = 3000
+const duration = 500
 const initialLottieProgress = (1/61)*13
 const finalLottieProgress = (1/61)*28
 
@@ -51,7 +54,9 @@ export class DatedExpenseCard extends Component {
       flatListHorizontal: true,
       flatListMaxWidth: new Animated.Value(screenWidth),
       flatListMaxHeight: new Animated.Value(screenHeight),
-      descriptionHeight: new Animated.Value(0)
+      descriptionHeight: new Animated.Value(0),
+      editButtonSize: new Animated.Value(0),
+      editButtonBoxSize: new Animated.Value(0),
     }
   }
 
@@ -80,6 +85,8 @@ export class DatedExpenseCard extends Component {
           ]),
         ]),
         Animated.timing(this.state.descriptionHeight, { toValue: 0, duration }),
+        Animated.timing(this.state.editButtonSize, { toValue: 0, duration }),
+        Animated.timing(this.state.editButtonBoxSize, { toValue: 0, duration }),
         Animated.timing(this.state.top, { toValue: this.py, duration }),
         Animated.timing(this.state.titleMarginLeft, { toValue: this.initialMarginLeft, duration }),
         Animated.timing(this.state.left, { toValue: this.px, duration }),
@@ -105,13 +112,13 @@ export class DatedExpenseCard extends Component {
       height: new Animated.Value(height),
       cardType: DELETING
     }, () => {
-      // setTimeout(() => {
-      //   deleteExpense(this.props.expense.id)
-      // }, duration*2 + duration/2 + duration/3);
+      setTimeout(() => {
+        deleteExpense(this.props.expense.id)
+      }, duration*2 + duration/2 + duration/3);
+      console.log('iniciando animação')
       Animated.sequence([
         Animated.parallel([
           Animated.timing(this.state.top, { toValue: y0, duration }),
-          Animated.timing(this.state.descriptionHeight, { toValue: 0 }),
           Animated.timing(this.state.width, { toValue: 25, duration }),
           Animated.timing(this.state.left, { toValue: 25, duration }),
           Animated.timing(this.state.height, { toValue: 25, duration }),
@@ -157,6 +164,8 @@ export class DatedExpenseCard extends Component {
             ]),
           ]),
           Animated.timing(this.state.top, { toValue: 0, duration }),
+          Animated.timing(this.state.editButtonSize, { toValue: editButtonMaxSize, duration }),
+          Animated.timing(this.state.editButtonBoxSize, { toValue: editButtonBoxMaxSize, duration }),
           Animated.timing(this.state.descriptionHeight, { toValue: screenWidth, duration }),
           Animated.timing(this.state.titleMarginLeft, { toValue: 54, duration }),
           Animated.timing(this.state.left, { toValue: 0, duration }),
@@ -209,6 +218,8 @@ export class DatedExpenseCard extends Component {
         horizontal={this.state.flatListHorizontal}
         listMaxWidth={this.state.flatListMaxWidth}
         borderRadius={this.state.borderRadius}
+        editButtonSize={this.state.editButtonSize}
+        editButtonBoxSize={this.state.editButtonBoxSize}
         lottieProgress={this.state.lottieProgress}
         left={this.state.left}
         top={this.state.top}

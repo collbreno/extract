@@ -53,30 +53,41 @@ export default class AnimatedFullScreenCard extends Component {
   }
 
   renderDateAndDeleteButton = () => {
+    const AnimatedIcon = Animated.createAnimatedComponent(MaterialCommunityIcons)
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 48 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <MaterialCommunityIcons name={'calendar'} size={14} color={materialColors.blackPrimary} />
           <Text style={{ marginLeft: 6, fontFamily: 'sans-serif-medium', fontSize: 14, color: materialColors.blackPrimary }}>{format(this.props.expense.date, "dd/MM/yyyy")}</Text>
         </View>
-        <TouchableNativeFeedback
-          onPress={() => {
-            console.log('cliquei no botao de apagar')
-            this.props.onDelete(0, 0, Dimensions.get('window').width, Dimensions.get('window').height)
-            return
-            //sweet alert não funciona por algum motivo. TODO: consertar isso
-            const noButton = { text: 'Não', onPress: () => false }
-            const yesButton = { text: 'Sim', onPress: () => this.props.onDelete(0, 0, Dimensions.get('window').width, Dimensions.get('window').height) }
-            showSweetAlert({
-              type: 'question',
-              title: 'Apagar gasto?',
-              buttons: [noButton, yesButton]
-            })
-          }}>
-          <View style={{ height: 48, width: 48, alignItems: 'center', justifyContent: 'center' }}>
-            <MaterialCommunityIcons name='delete' size={22} color={materialColors.blackPrimary} />
-          </View>
-        </TouchableNativeFeedback>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableNativeFeedback onPress={() => false}>
+            <Animated.View style={{ height: this.props.editButtonBoxSize, width: this.props.editButtonBoxSize, alignItems: 'center', justifyContent: 'center' }}>
+              <AnimatedIcon
+                name='pencil'
+                style={{ fontSize: this.props.editButtonSize }}
+                color={materialColors.blackPrimary} />
+            </Animated.View>
+          </TouchableNativeFeedback>
+          <TouchableNativeFeedback
+            onPress={() => {
+              console.log('cliquei no botao de apagar')
+              this.props.onDelete(0, 0, Dimensions.get('window').width, Dimensions.get('window').height)
+              return
+              //sweet alert não funciona por algum motivo. TODO: consertar isso
+              const noButton = { text: 'Não', onPress: () => false }
+              const yesButton = { text: 'Sim', onPress: () => this.props.onDelete(0, 0, Dimensions.get('window').width, Dimensions.get('window').height) }
+              showSweetAlert({
+                type: 'question',
+                title: 'Apagar gasto?',
+                buttons: [noButton, yesButton]
+              })
+            }}>
+            <View style={{ height: 48, width: 48, alignItems: 'center', justifyContent: 'center' }}>
+              <MaterialCommunityIcons name='delete' size={22} color={materialColors.blackPrimary} />
+            </View>
+          </TouchableNativeFeedback>
+        </View>
       </View>
     )
   }

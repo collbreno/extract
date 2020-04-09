@@ -24,7 +24,6 @@ export default class DeletingAnimatedCard extends Component {
     )
   }
 
-  
   renderToolbar = () => {
     return (
       <Animated.View
